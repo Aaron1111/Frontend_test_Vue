@@ -344,7 +344,7 @@ export default {
         const store = useAuthStore()
         const { token } = store
         console.log("bearer token: ", token)
-     
+
 
         const config = {
           headers: { Authorization: `Bearer ${token}` }
@@ -370,7 +370,17 @@ export default {
         console.log("url: ", url)
         axios.put(
           url,
-          jsonData,
+          {
+            data: {
+              first_name: this.firstName,
+              last_name: this.lastName,
+              gender: this.editedItem.gender,
+              date_of_birth: this.editedItem.date_of_birth,
+              email: this.editedItem.email,
+              phone: this.editedItem.phone,
+              address: this.editedItem.address
+            }
+          },
           config
         ).then((response) => {
           console.log(response);
