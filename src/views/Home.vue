@@ -17,21 +17,19 @@
           <!-- <v-col> -->
           <!-- <v-layout justify-center align-center> -->
           <v-card width="50%" class="align-center justify-center" flat>
-            <v-form v-model="valid">
+            <v-form fast-fail @submit.prevent v-model="valid">
               <v-container>
                 <v-row style="margin-bottom: 10px;">
                   <!-- <v-col cols="12" md="4"> -->
-                  <v-text-field variant="outlined" v-model="email" :rules="nameRules" :counter="10"
-                    label="Alamat Email" required hide-details></v-text-field>
+                  <v-text-field clearable variant="outlined" v-model="email" :rules="emailRules" label="Alamat Email"
+                    required></v-text-field>
                   <!-- </v-col> -->
                 </v-row>
                 <v-row style="margin-bottom: 10px;">
-                  <!-- <v-col cols="12" md="4"> -->
                   <v-text-field variant="outlined" :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
                     :rules="[rules.required, rules.min]" :type="show ? 'text' : 'password'" name="input-10-2"
                     label="Kata Sandi" hint="Minimal 8 Karakter" v-model="password"
                     @click:append-inner="show = !show"></v-text-field>
-                  <!-- </v-col> -->
                 </v-row>
                 <v-row>
                   <v-btn @click="login(email, password)" :height="50" block rounded color="#2E74B2">Masuk</v-btn>
@@ -50,6 +48,9 @@
 <script>
 import router from '@/router'
 import axios from 'axios'
+import { useAuthStore } from "@/stores/auth"
+import { storeToRefs } from 'pinia'
+
 export default {
   data: () => ({
     show: false,
@@ -70,20 +71,20 @@ export default {
     ],
     email: '',
     rules: {
-      required: value => !!value || 'Required.',
-      min: v => v.length >= 8 || 'Min 8 characters',
+      required: value => !!value || 'Harus diisi.',
+      min: v => v.length >= 8 || 'Minimal 8 karakter',
       emailMatch: () => (`The email and password you entered don't match`),
     },
     emailRules: [
       value => {
         if (value) return true
 
-        return 'E-mail is requred.'
+        return 'E-mail harus diisi'
       },
       value => {
         if (/.+@.+\..+/.test(value)) return true
 
-        return 'E-mail must be valid.'
+        return 'E-mail tidak valid.'
       },
     ],
   }),
@@ -91,16 +92,24 @@ export default {
 
   },
   methods: {
-    login(email, password) {
+    async login(email, password) {
       console.log("username: ", email)
       console.log("password: ", password)
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hash));
+      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      password = hashHex
+      const store = useAuthStore()
       axios.post('https://api-test.bullionecosystem.com/api/v1/auth/login', {
         email: email,
         password: password
       })
         .then(function (response) {
-          console.log(response);
+          console.log(response.data.data.token);
           router.push('/dashboard')
+          store.saveToken(response.data.data.token)
         })
         .catch(function (error) {
           console.log(error);

@@ -1,32 +1,18 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="data"
-    :sort-by="[{ key: 'name', order: 'asc' }]"
-    class="elevation-1"
-  >
+  <v-data-table :headers="headers" :items="data" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <template #item.photo="{ item }">
+      <a target="_blank" :href="item.selectable.photo">
+        {{item.selectable.photo}}
+      </a>
+    </template>
     <template v-slot:top>
-      <v-toolbar
-        flat
-      >
+      <v-toolbar flat>
         <v-toolbar-title>My CRUD</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
+        <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog
-          v-model="dialog"
-          max-width="500px"
-        >
+        <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn
-              color="primary"
-              dark
-              class="mb-2"
-              v-bind="props"
-            >
+            <v-btn color="primary" dark class="mb-2" v-bind="props">
               New Item
             </v-btn>
           </template>
@@ -38,45 +24,17 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.name"
-                      label="name"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field v-model="editedItem.name" label="name"></v-text-field>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.gender"
-                      label="gender"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field v-model="editedItem.gender" label="gender"></v-text-field>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.date_of_birth"
-                      label="date of birth"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field v-model="editedItem.date_of_birth" label="date of birth"></v-text-field>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.email"
-                      label="Email Address"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field v-model="editedItem.email" label="Email Address"></v-text-field>
                   </v-col>
                   <!-- <v-col
                     cols="12"
@@ -88,26 +46,11 @@
                       label="Photo"
                     ></v-text-field>
                   </v-col> -->
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.phone"
-                      label="Phone"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field v-model="editedItem.phone" label="Phone"></v-text-field>
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="6"
-                    md="12"
-                  >
-                    <v-text-field
-                      class="address"
-                      v-model="editedItem.address"
-                      label="Address"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="12">
+                    <v-text-field class="address" v-model="editedItem.address" label="Address"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -115,18 +58,10 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="close"
-              >
+              <v-btn color="blue-darken-1" variant="text" @click="close">
                 Cancel
               </v-btn>
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="save"
-              >
+              <v-btn color="blue-darken-1" variant="text" @click="save">
                 Save
               </v-btn>
             </v-card-actions>
@@ -146,11 +81,7 @@
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon
-        size="small"
-        class="me-2"
-        @click="editItem(item.raw)"
-      >
+      <v-icon size="small" class="me-2" @click="editItem(item.raw)">
         mdi-pencil-box-outline
       </v-icon>
       <!-- <v-icon
@@ -161,182 +92,187 @@
       </v-icon> -->
     </template>
     <template v-slot:no-data>
-      <v-btn
-        color="primary"
-        @click="initialize"
-      >
+      <v-btn color="primary" @click="initialize">
         Reset
       </v-btn>
     </template>
   </v-data-table>
 </template>
 <script>
-  export default {
-    data: () => ({
-      dialog: false,
-      dialogDelete: false,
-      headers: [
-        {
-          title: 'Name',
-          align: 'center',
-          sortable: false,
-          key: 'name',
-        },
-        {
-          title: 'Gender',
-          align: 'center',
-          sortable: false,
-          key: 'gender',
-        },
-        {
-          title: 'Date of Birth',
-          align: 'center',
-          sortable: false,
-          key: 'date_of_birth',
-        },
-        {
-          title: 'Email Address',
-          align: 'center',
-          sortable: false,
-          key: 'email',
-        },
-        {
-          title: 'Photo Profile',
-          align: 'center',
-          sortable: false,
-          key: 'photo',
-        },
-        {
-          title: 'Phone Number',
-          align: 'center',
-          sortable: false,
-          key: 'phone',
-        },
-        {
-          title: 'Address',
-          align: 'center',
-          sortable: false,
-          key: 'address',
-        },
-        { title: 'Act', key: 'actions', sortable: false },
-      ],
-      data: [],
-      editedIndex: -1,
-      editedItem: {
-        name: '',
-        gender: 'male',
-        date_of_birth: 0,
-        email: 0,
-        photo: 0,
-        phone: 0,
-        address: 0
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import router from "@/router";
+export default {
+  data: () => ({
+    dialog: false,
+    dialogDelete: false,
+    headers: [
+      {
+        title: 'Name',
+        align: 'center',
+        sortable: false,
+        key: 'name',
       },
-      defaultItem: {
-        name: '',
-        gender: 'male',
-        date_of_birth: 0,
-        email: 0,
-        photo: 0,
-        phone: 0,
-        address: 0
+      {
+        title: 'Gender',
+        align: 'center',
+        sortable: false,
+        key: 'gender',
       },
-    }),
-
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Profile'
+      {
+        title: 'Date of Birth',
+        align: 'center',
+        sortable: false,
+        key: 'date_of_birth',
       },
+      {
+        title: 'Email Address',
+        align: 'center',
+        sortable: false,
+        key: 'email',
+      },
+      {
+        title: 'Photo Profile',
+        align: 'center',
+        sortable: false,
+        key: 'photo',
+      },
+      {
+        title: 'Phone Number',
+        align: 'center',
+        sortable: false,
+        key: 'phone',
+      },
+      {
+        title: 'Address',
+        align: 'center',
+        sortable: false,
+        key: 'address',
+      },
+      { title: 'Act', key: 'actions', sortable: false },
+    ],
+    data: [],
+    editedIndex: -1,
+    editedItem: {
+      name: '',
+      gender: 'male',
+      date_of_birth: 0,
+      email: 0,
+      photo: 0,
+      phone: 0,
+      address: 0
     },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-      dialogDelete (val) {
-        val || this.closeDelete()
-      },
+    defaultItem: {
+      name: '',
+      gender: 'male',
+      date_of_birth: 0,
+      email: 0,
+      photo: 0,
+      phone: 0,
+      address: 0
     },
+  }),
 
-    created () {
-      this.initialize()
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Item' : 'Edit Profile'
     },
+  },
 
-    methods: {
-      initialize () {
-          
-
-        this.data = [
-    {
-      "_id": "64f0114b7f14b2852c7733fa",
-      "name": "Imam Rachmansyah",
-      "gender": "male",
-      "date_of_birth": "1995-08-31",
-      "email": "rachmansyah@email.com",
-      "photo" : "test",
-      "phone": "081234567890",
-      "address": "Jl. Suka suka No. 15, Bogor"
+  watch: {
+    dialog(val) {
+      val || this.close()
     },
-    {
-      "_id": "64f05346c96971813eb52467",
-      "name": "Ghalyatama Fauzi",
-      "gender": "male",
-      "date_of_birth": "1998-08-31",
-      "email": "ghalyatama@email.com",
-      "photo": "test",
-      "phone": "081987654321",
-      "address": "Jl. Fatmawati No.11, Antah Berantah"
-    }
-  ]
-      },
+    dialogDelete(val) {
+      val || this.closeDelete()
+    },
+  },
 
-      editItem (item) {
-        this.editedIndex = this.data.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
+  created() {
+    this.initialize()
+  },
 
-      deleteItem (item) {
-        this.editedIndex = this.data.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
+  methods: {
+    initialize() {
+      const store = useAuthStore()
+      const { token } = store
+      console.log("bearer token: ", token)
+      if (!token) {
+        router.push('/')
+      }
 
-      deleteItemConfirm () {
-        this.data.splice(this.editedIndex, 1)
-        this.closeDelete()
-      },
 
-      close () {
-        this.dialog = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
-
-      closeDelete () {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
-
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.data[this.editedIndex], this.editedItem)
-        } else {
-          this.data.push(this.editedItem)
+      this.data = [
+        {
+          "_id": "64f0114b7f14b2852c7733fa",
+          "name": "Imam Rachmansyah",
+          "gender": "male",
+          "date_of_birth": "1995-08-31",
+          "email": "rachmansyah@email.com",
+          "photo": "/test",
+          "phone": "081234567890",
+          "address": "Jl. Suka suka No. 15, Bogor"
+        },
+        {
+          "_id": "64f05346c96971813eb52467",
+          "name": "Ghalyatama Fauzi",
+          "gender": "male",
+          "date_of_birth": "1998-08-31",
+          "email": "ghalyatama@email.com",
+          "photo": "/test",
+          "phone": "081987654321",
+          "address": "Jl. Fatmawati No.11, Antah Berantah"
         }
-        this.close()
-      },
+      ]
     },
-  }
+
+    editItem(item) {
+      this.editedIndex = this.data.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
+    },
+
+    deleteItem(item) {
+      this.editedIndex = this.data.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
+    },
+
+    deleteItemConfirm() {
+      this.data.splice(this.editedIndex, 1)
+      this.closeDelete()
+    },
+
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    closeDelete() {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.data[this.editedIndex], this.editedItem)
+      } else {
+        this.data.push(this.editedItem)
+      }
+      this.close()
+    },
+  },
+}
 </script>
 
 <style>
-
 .address {
- height: 50px; 
+  height: 50px;
 }
 </style>
