@@ -49,7 +49,6 @@
 import router from '@/router'
 import axios from 'axios'
 import { useAuthStore } from "@/stores/auth"
-import { storeToRefs } from 'pinia'
 
 export default {
   data: () => ({
@@ -117,7 +116,7 @@ export default {
           })
           .catch(function (error) {
             console.log(error);
-            alert("email atau kata sandi salah")
+            alert(error.response.data.err_message)
           });
       }
     }

@@ -4,6 +4,9 @@
     <v-navigation-drawer :width="405" image="../assets/FlatDesign2.png" permanent theme="dark"></v-navigation-drawer>
     <v-main style="border: none;">
       <v-container fluid>
+        <v-snackbar v-model="snackbar" :timeout="timeout">
+          {{ snackbarText }}
+        </v-snackbar>
         <div class="form">
           <v-card width="100%" class="align-center justify-center" flat>
             <v-form fast-fail @submit.prevent="register()" v-model="isFormValid">
@@ -101,6 +104,7 @@
                 </v-row>
               </v-container>
             </v-form>
+
           </v-card>
         </div>
       </v-container>
@@ -111,8 +115,14 @@
 </template>
 
 <script>
+import axios from 'axios'
+import router from '@/router'
+
 export default {
   data: () => ({
+    snackbar: false,
+    timeout: 2000,
+    snackbarText: "erro",
     isFormValid: false,
     show: false,
     show2: false,
@@ -179,17 +189,45 @@ export default {
     //   console.log("save date: ", date)
     // }
 
-    register() {
+    async register() {
       console.log("registering")
       console.log("firstname: ", this.firstname)
       console.log("lastname: ", this.lastname)
       console.log("gender: ", this.gender)
+      console.log("date of birth: ", this.date)
       console.log("email: ", this.email)
       console.log("phone: ", this.phone)
       console.log("address: ", this.address)
-      console.log("photo: ", this.photo)
+      console.log("photo: ", this.photo[0])
       console.log("password: ", this.password)
       console.log("password2: ", this.password2)
+      const encoder = new TextEncoder();
+      const data = encoder.encode(this.password);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hash));
+      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      let hashed = hashHex
+      if (this.isFormValid) {
+        console.log("valid")
+        axios.postForm('https://api-test.bullionecosystem.com/api/v1/auth/register', {
+          first_name: this.firstname,
+          last_name: this.lastname,
+          gender: this.gender,
+          date_of_birth: this.date,
+          email: this.email,
+          phone: this.phone,
+          address: this.address,
+          photo: this.photo[0],
+          password: hashed
+        }).then(function (response) {
+          console.log(response)
+          router.push('/')
+        })
+          .catch(function (error) {
+            console.log(error.response.data.err_message);
+            alert(error.response.data.err_message)
+          });
+      }
     }
   },
   computed: {
