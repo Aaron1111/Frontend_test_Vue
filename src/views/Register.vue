@@ -6,7 +6,7 @@
       <v-container fluid>
         <div class="form">
           <v-card width="100%" class="align-center justify-center" flat>
-            <v-form v-model="valid">
+            <v-form fast-fail @submit.prevent="register()" v-model="isFormValid">
               <v-container>
                 <v-row>
                   <v-col>
@@ -57,22 +57,23 @@
                 <v-row>
                   <v-col>
                     <div class="form-label">Phone Number</div>
-                    <v-text-field density="compact" variant="outlined" :rules="phoneRules" v-model="phone"
-                      label="" required></v-text-field>
+                    <v-text-field density="compact" variant="outlined" :rules="phoneRules" v-model="phone" label=""
+                      required></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
                     <div class="form-label">Address</div>
-                    <v-textarea multi-line height="300px" variant="outlined" v-model="address" :counter="10" label=""
-                      required hide-details></v-textarea>
+                    <v-textarea :rules="[rules.required]" multi-line height="300px" variant="outlined" v-model="address"
+                      label="" required></v-textarea>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
                     <div class="form-label">Photo profile</div>
-                    <v-file-input :rules="[rules.required]" v-model="photo" prepend-icon="" accept="image/png, image/jpeg, image/bmp"
-                      label="Choose File (png, jpeg, bmp)" variant="solo-filled"></v-file-input>
+                    <v-file-input show-size :rules="[rules.required, rules.photos]" v-model="photo" prepend-icon=""
+                      accept="image/png, image/jpeg, image/bmp" label="Choose File (png, jpeg, bmp)"
+                      variant="solo-filled"></v-file-input>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -80,7 +81,7 @@
                     <div class="form-label">Password</div>
                     <v-text-field density="compact" variant="outlined"
                       :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]"
-                      :type="show ? 'text' : 'password'" name="input-10-2" label="Kata Sandi" hint="Minimal 8 Karakter"
+                      :type="show ? 'text' : 'password'" name="input-10-2" label="" hint="Minimal 8 Karakter"
                       v-model="password" @click:append-inner="show = !show"></v-text-field>
                   </v-col>
                 </v-row>
@@ -88,13 +89,15 @@
                   <v-col>
                     <div class="form-label">Confirm Password</div>
                     <v-text-field density="compact" variant="outlined"
-                      :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :rules="[rules.required, rules.min]"
-                      :type="show ? 'text' : 'password'" name="input-10-1" label="Kata Sandi" hint="Minimal 8 Karakter"
-                      v-model="password2" @click:append-inner="show = !show"></v-text-field>
+                      :append-inner-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                      :rules="[rules.required, rules.min, passwordConfirmationRule]" :type="show2 ? 'text' : 'password'"
+                      name="input-10-1" label="" hint="Minimal 8 Karakter" v-model="password2"
+                      @click:append-inner="show2 = !show2"></v-text-field>
                   </v-col>
                 </v-row>
                 <v-row>
-                  <v-btn @click="register()" :height="50" block rounded color="#2E74B2">Add Users</v-btn>
+                  <v-btn :disabled="!isFormValid" type="submit" :height="50" block rounded color="#2E74B2">Add
+                    Users</v-btn>
                 </v-row>
               </v-container>
             </v-form>
@@ -110,7 +113,9 @@
 <script>
 export default {
   data: () => ({
+    isFormValid: false,
     show: false,
+    show2: false,
     valid: false,
     firstname: '',
     lastname: '',
@@ -118,7 +123,7 @@ export default {
     email: '',
     phone: '',
     address: '',
-    photo: null,
+    photo: [],
     date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)),
     menu: false,
     modal: false,
@@ -141,6 +146,7 @@ export default {
     rules: {
       required: value => !!value || 'Harus diisi.',
       min: v => v.length >= 8 || 'Minimal 8 karakter',
+      photos: v => v.length > 0 || 'Photo required'
     },
     emailRules: [
       value => {
@@ -190,6 +196,10 @@ export default {
     isoDate() {
       console.log("computed: ", this.date)
       return new Date(this.date - (new Date()).getTimezoneOffset() * 60000).toISOString().substr(0, 10);
+    },
+
+    passwordConfirmationRule() {
+      return () => (this.password2 === this.password) || 'Kata sandi harus sama'
     }
   }
 }

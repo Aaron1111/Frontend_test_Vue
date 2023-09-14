@@ -17,11 +17,11 @@
           <!-- <v-col> -->
           <!-- <v-layout justify-center align-center> -->
           <v-card width="50%" class="align-center justify-center" flat>
-            <v-form fast-fail @submit.prevent v-model="valid">
+            <v-form fast-fail @submit.prevent="login()" v-model="isFormValid">
               <v-container>
                 <v-row style="margin-bottom: 10px;">
                   <!-- <v-col cols="12" md="4"> -->
-                  <v-text-field clearable variant="outlined" v-model="email" :rules="emailRules" label="Alamat Email"
+                  <v-text-field append-inner-icon="mdi-email" variant="outlined" v-model="email" :rules="emailRules" label="Alamat Email"
                     required></v-text-field>
                   <!-- </v-col> -->
                 </v-row>
@@ -32,7 +32,7 @@
                     @click:append-inner="show = !show"></v-text-field>
                 </v-row>
                 <v-row>
-                  <v-btn @click="login(email, password)" :height="50" block rounded color="#2E74B2">Masuk</v-btn>
+                  <v-btn :disabled="!isFormValid" type="submit" :height="50" block rounded color="#2E74B2">Masuk</v-btn>
                 </v-row>
               </v-container>
             </v-form>
@@ -53,6 +53,7 @@ import { storeToRefs } from 'pinia'
 
 export default {
   data: () => ({
+    isFormValid: false,
     show: false,
     valid: false,
     email: '',
@@ -92,7 +93,9 @@ export default {
 
   },
   methods: {
-    async login(email, password) {
+    async login() {
+      let email = this.email
+      let password = this.password
       console.log("username: ", email)
       console.log("password: ", password)
       const encoder = new TextEncoder();
@@ -102,19 +105,21 @@ export default {
       const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
       password = hashHex
       const store = useAuthStore()
-      axios.post('https://api-test.bullionecosystem.com/api/v1/auth/login', {
-        email: email,
-        password: password
-      })
-        .then(function (response) {
-          console.log(response.data.data.token);
-          router.push('/dashboard')
-          store.saveToken(response.data.data.token)
+      if (this.isFormValid) {
+        axios.post('https://api-test.bullionecosystem.com/api/v1/auth/login', {
+          email: email,
+          password: password
         })
-        .catch(function (error) {
-          console.log(error);
-          alert("email atau kata sandi salah")
-        });
+          .then(function (response) {
+            console.log(response.data.data.token);
+            router.push('/dashboard')
+            store.saveToken(response.data.data.token)
+          })
+          .catch(function (error) {
+            console.log(error);
+            alert("email atau kata sandi salah")
+          });
+      }
     }
   }
 }
