@@ -4,7 +4,7 @@
     <v-navigation-drawer :width="405" image="../assets/FlatDesign2.png" permanent theme="dark"></v-navigation-drawer>
     <v-main style="border: none;">
       <v-container fluid>
-        <v-snackbar v-model="snackbar" :timeout="timeout">
+        <v-snackbar :color="color" v-model="snackbar" :timeout="timeout">
           {{ snackbarText }}
         </v-snackbar>
         <div class="form">
@@ -120,9 +120,10 @@ import router from '@/router'
 
 export default {
   data: () => ({
+    color: 'blue',
     snackbar: false,
     timeout: 2000,
-    snackbarText: "erro",
+    snackbarText: "error",
     isFormValid: false,
     show: false,
     show2: false,
@@ -184,11 +185,6 @@ export default {
     ],
   }),
   methods: {
-    // saveDate(date) {
-    //   this.menu2 = false
-    //   console.log("save date: ", date)
-    // }
-
     async register() {
       console.log("registering")
       console.log("firstname: ", this.firstname)
@@ -223,9 +219,12 @@ export default {
           console.log(response)
           router.push('/')
         })
-          .catch(function (error) {
+          .catch((error) => {
             console.log(error.response.data.err_message);
-            alert(error.response.data.err_message)
+            // alert(error.response.data.err_message)
+            this.color = 'red'
+            this.snackbarText = error.response.data.err_message
+            this.snackbar = true
           });
       }
     }

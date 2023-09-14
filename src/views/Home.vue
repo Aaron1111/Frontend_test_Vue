@@ -4,6 +4,7 @@
     <v-navigation-drawer :width="405" image="../assets/FlatDesign.png" permanent theme="dark"></v-navigation-drawer>
     <v-main style="border: none;">
       <v-container fluid>
+
         <div class="banner-text">
           <h1 style="color: #2E74B2;">
             LOGIN DULU ABANGKUH!
@@ -17,12 +18,15 @@
           <!-- <v-col> -->
           <!-- <v-layout justify-center align-center> -->
           <v-card width="50%" class="align-center justify-center" flat>
+            <v-snackbar location="top" :color="color" v-model="snackbar" :timeout="timeout">
+              {{ snackbarText }}
+            </v-snackbar>
             <v-form fast-fail @submit.prevent="login()" v-model="isFormValid">
               <v-container>
                 <v-row style="margin-bottom: 10px;">
                   <!-- <v-col cols="12" md="4"> -->
-                  <v-text-field append-inner-icon="mdi-email" variant="outlined" v-model="email" :rules="emailRules" label="Alamat Email"
-                    required></v-text-field>
+                  <v-text-field append-inner-icon="mdi-email" variant="outlined" v-model="email" :rules="emailRules"
+                    label="Alamat Email" required></v-text-field>
                   <!-- </v-col> -->
                 </v-row>
                 <v-row style="margin-bottom: 10px;">
@@ -52,6 +56,9 @@ import { useAuthStore } from "@/stores/auth"
 
 export default {
   data: () => ({
+    color: 'blue',
+    snackbar: false,
+    timeout: 2000,
     isFormValid: false,
     show: false,
     valid: false,
@@ -109,14 +116,17 @@ export default {
           email: email,
           password: password
         })
-          .then(function (response) {
+          .then((response) => {
             console.log(response.data.data.token);
             router.push('/dashboard')
             store.saveToken(response.data.data.token)
           })
-          .catch(function (error) {
+          .catch((error) => {
             console.log(error);
-            alert(error.response.data.err_message)
+            // alert(error.response.data.err_message)
+            this.color = 'red'
+            this.snackbarText = error.response.data.err_message
+            this.snackbar = true
           });
       }
     }
