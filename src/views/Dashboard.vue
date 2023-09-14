@@ -345,9 +345,9 @@ export default {
         const { token } = store
         console.log("bearer token: ", token)
 
-
+        
         const config = {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
         };
         console.log("save updated item")
         console.log("edited item: ", this.editedItem)
@@ -370,17 +370,7 @@ export default {
         console.log("url: ", url)
         axios.put(
           url,
-          {
-            data: {
-              first_name: this.firstName,
-              last_name: this.lastName,
-              gender: this.editedItem.gender,
-              date_of_birth: this.editedItem.date_of_birth,
-              email: this.editedItem.email,
-              phone: this.editedItem.phone,
-              address: this.editedItem.address
-            }
-          },
+          jsonData,
           config
         ).then((response) => {
           console.log(response);
