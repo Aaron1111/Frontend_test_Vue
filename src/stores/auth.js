@@ -12,6 +12,9 @@ export const useAuthStore = defineStore("token", {
         saveToken (authToken) {
             this.token = authToken
             localStorage.setItem(STORE_NAME, this.token)
+        },
+        deleteToken(){
+            localStorage.removeItem(STORE_NAME)
         }
      },
      getters: {
